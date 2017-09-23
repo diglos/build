@@ -315,7 +315,7 @@ compile_kernel()
 		fi
 	else
 		make $CTHREADS ARCH=$ARCHITECTURE CROSS_COMPILE="$CCACHE $KERNEL_COMPILER" oldconfig
-		make $CTHREADS ARCH=$ARCHITECTURE CROSS_COMPILE="$CCACHE $KERNEL_COMPILER" menuconfig
+		make $CTHREADS ARCH=$ARCHITECTURE CROSS_COMPILE="$CCACHE $KERNEL_COMPILER" ${KERNEL_MENUCONFIG:-menuconfig}
 		# store kernel config in easily reachable place
 		display_alert "Exporting new kernel config" "$DEST/$LINUXCONFIG.config" "info"
 		cp .config $DEST/config/$LINUXCONFIG.config
@@ -508,7 +508,7 @@ advanced_patch()
 				if [[ -s ${dir%%:*}/$name ]]; then
 					process_patch_file "${dir%%:*}/$name" "${dir##*:}"
 				else
-					display_alert "... ${dir##*:} $name" "skipped"
+					display_alert "* ${dir##*:} $name" "skipped"
 				fi
 				break # next name
 			fi
@@ -534,10 +534,10 @@ process_patch_file()
 	patch --batch --silent -p1 -N < $patch >> $DEST/debug/patching.log 2>&1
 
 	if [[ $? -ne 0 ]]; then
-		display_alert "... $status $(basename $patch)" "failed" "wrn"
+		display_alert "* $status $(basename $patch)" "failed" "wrn"
 		[[ $EXIT_PATCHING_ERROR == yes ]] && exit_with_error "Aborting due to" "EXIT_PATCHING_ERROR"
 	else
-		display_alert "... $status $(basename $patch)" "succeeded" "info"
+		display_alert "* $status $(basename $patch)" "succeeded" "info"
 	fi
 	echo >> $DEST/debug/patching.log
 }
